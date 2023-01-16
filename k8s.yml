@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-deployment-security
+  labels:
+    app: security-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: security-service
+  template:
+    metadata:
+      labels:
+        app: security-service
+    spec:
+      containers:
+      - name: app-security
+        image: 532336934360.dkr.ecr.us-east-1.amazonaws.com/aforo255-security:latest
+        ports:
+        - containerPort: 80
+        env:
+        - name: SPRING_CLOUD_CONFIG_LABEL
+          value: prod
+        - name: SPRING_CLOUD_CONFIG_URI
+          value: http://ec2-54-84-148-245.compute-1.amazonaws.com:8888        
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: app-service-security
+spec:
+  type: LoadBalancer
+  selector:
+    app: security-service
+  ports:
+  - name: http
+    port: 80
+    targetPort: 80
